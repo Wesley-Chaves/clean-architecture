@@ -1,3 +1,5 @@
+import { AccountModel } from '../../../domain/models/account'
+import { AddAccount, AddAccountModel } from '../../../domain/usecases/add-account'
 import { InvalidParamError, MissingParamError, ServerError } from '../../errors'
 import { EmailValidator } from '../../protocols/email-validator'
 import { SignUpController } from './signup'
@@ -11,18 +13,32 @@ const makeEmailValidatorAdapterStub = (): EmailValidator => {
   return new EmailValidatorAdapterStub()
 }
 
+const makeAddAccountStub = (): AddAccount => {
+  class AddAccountStub implements AddAccount {
+    add (accountRequest: AddAccountModel): AccountModel {
+      const { name, email, password } = accountRequest
+      const account = Object.assign({}, { id: 'valid_id' }, { name, email, password })
+      return account
+    }
+  }
+  return new AddAccountStub()
+}
+
 interface SutTypes {
   sut: SignUpController
   emailValidatorStub: EmailValidator
+  addAccountStub: AddAccount
 }
 
 const makeSut = (): SutTypes => {
+  const addAccountStub = makeAddAccountStub()
   const emailValidatorStub = makeEmailValidatorAdapterStub()
-  const sut = new SignUpController(emailValidatorStub)
+  const sut = new SignUpController(emailValidatorStub, addAccountStub)
 
   return {
     sut,
-    emailValidatorStub
+    emailValidatorStub,
+    addAccountStub
   }
 }
 
@@ -142,6 +158,25 @@ describe('SignUpController', () => {
     }
     sut.handle(httpRequest)
     expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')
+  })
+
+  test('Should call AddAccount with correct values', () => {
+    const { sut, addAccountStub } = makeSut()
+    const addAccountSpy = jest.spyOn(addAccountStub, 'add')
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'valid_email@mail.com',
+        password: 'valid_password',
+        passwordConfirmation: 'valid_password'
+      }
+    }
+    sut.handle(httpRequest)
+    expect(addAccountSpy).toHaveBeenCalledWith({
+      name: 'any_name',
+      email: 'valid_email@mail.com',
+      password: 'valid_password'
+    })
   })
 
   test('Should return 500 if EmailValidator throws', () => {
