@@ -1,3 +1,4 @@
+import { InvalidParamError } from '../../errors/invalid-param'
 import { MissingParamError } from '../../errors/missing-param'
 import { SignUpController } from './signup'
 
@@ -71,5 +72,20 @@ describe('SignUpController', () => {
     const httpResponse = sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(200)
     expect(httpResponse.body).toBe('sucess')
+  })
+
+  test('Should return an error if passwordConfirmation is invalid', () => {
+    const sut = new SignUpController()
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'valid_password',
+        passwordConfirmation: 'invalid_password'
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new InvalidParamError('passwordConfirmation'))
   })
 })
