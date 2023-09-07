@@ -15,9 +15,9 @@ export const serverError = (): HttpResponse => {
   }
 }
 
-export const sucess = (data?: any): HttpResponse => {
+export const sucess = (data: any): HttpResponse => {
   return {
     statusCode: 200,
-    body: data || 'sucess'
+    body: data
   }
 }
