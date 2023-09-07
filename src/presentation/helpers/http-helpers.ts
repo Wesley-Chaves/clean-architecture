@@ -6,3 +6,10 @@ export const badRequest = (msgError: Error): HttpResponse => {
     body: msgError
   }
 }
+
+export const sucess = (): HttpResponse => {
+  return {
+    statusCode: 200,
+    body: 'sucess'
+  }
+}

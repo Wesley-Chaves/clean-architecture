@@ -1,5 +1,5 @@
 import { MissingParamError } from '../../errors/missing-param'
-import { badRequest } from '../../helpers/http-helpers'
+import { badRequest, sucess } from '../../helpers/http-helpers'
 import { Controller } from '../../protocols/controller'
 import { HttpRequest, HttpResponse } from '../../protocols/http'
 
@@ -11,5 +11,7 @@ export class SignUpController implements Controller {
         return badRequest(new MissingParamError(field))
       }
     }
+
+    return sucess()
   }
 }
