@@ -3,13 +3,13 @@ import { MissingParamError } from '../../errors/missing-param'
 import { EmailValidator } from '../../protocols/email-validator'
 import { SignUpController } from './signup'
 
-const makeEmailValidatorStub = (): EmailValidator => {
-  class EmailValidatorStub implements EmailValidator {
+const makeEmailValidatorAdapterStub = (): EmailValidator => {
+  class EmailValidatorAdapterStub implements EmailValidator {
     isValid (email: string): boolean {
       return true
     }
   }
-  return new EmailValidatorStub()
+  return new EmailValidatorAdapterStub()
 }
 
 interface SutTypes {
@@ -18,7 +18,7 @@ interface SutTypes {
 }
 
 const makeSut = (): SutTypes => {
-  const emailValidatorStub = makeEmailValidatorStub()
+  const emailValidatorStub = makeEmailValidatorAdapterStub()
   const sut = new SignUpController(emailValidatorStub)
 
   return {
