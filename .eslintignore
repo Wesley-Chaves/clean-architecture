@@ -4,3 +4,5 @@ package-lock.json
 package.json
 .husky
 coverage
+jest-integration-config.js
+jest-unit-config.js
