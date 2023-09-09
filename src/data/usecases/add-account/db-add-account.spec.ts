@@ -11,13 +11,7 @@ const makeEncrypter = (): Encrypter => {
   return new EncrypterStub()
 }
 
-interface SutTypes {
-  sut: DbAddAccount
-  encrypterStub: Encrypter
-  addAccountRepositoryStub: AddAccountRepository
-}
-
-const makeSut = (): SutTypes => {
+const makeAddAccountRepository = (): AddAccountRepository => {
   class AccountMongoRepositoryStub implements AddAccountRepository {
     async add (accountData: DbAddAccountModel): Promise<DbAccountModel> {
       const generatedId = 'valid_id'
@@ -26,8 +20,17 @@ const makeSut = (): SutTypes => {
       return await new Promise((resolve) => { resolve(account) })
     }
   }
-  const addAccountRepositoryStub = new AccountMongoRepositoryStub()
+  return new AccountMongoRepositoryStub()
+}
 
+interface SutTypes {
+  sut: DbAddAccount
+  encrypterStub: Encrypter
+  addAccountRepositoryStub: AddAccountRepository
+}
+
+const makeSut = (): SutTypes => {
+  const addAccountRepositoryStub = makeAddAccountRepository()
   const encrypterStub = makeEncrypter()
   const sut = new DbAddAccount(encrypterStub, addAccountRepositoryStub)
 
